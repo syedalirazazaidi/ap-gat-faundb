@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client"
 
 export const client = new ApolloClient({
-  uri: "https://48p1r2roz4.sse.codesandbox.io",
+  uri: "https://localhost:8888/.netlify/functions/graph_faunadb",
   cache: new InMemoryCache(),
 })
