@@ -1,5 +1,10 @@
 import React from "react"
+import { TodoItem } from "../components/crud"
 
 export default function Home() {
-  return <div>Hello world!</div>
+  return (
+    <div>
+      <TodoItem />
+    </div>
+  )
 }
