@@ -19,6 +19,14 @@ const ADD_TODO = gql`
     }
   }
 `
+const UPDATE_ITEM = gql`
+  mutation updateItem($id: ID!, $text: String!) {
+    updateItem(id: $id, text: $text) {
+      text
+      id
+    }
+  }
+`
 const DELETE_ITEM = gql`
   mutation deleteItem($id: ID!) {
     deleteItem(id: $id) {
@@ -28,8 +36,9 @@ const DELETE_ITEM = gql`
 `
 export const TodoItem = () => {
   const [text, setText] = React.useState("")
-  const [addTodo] = useMutation(ADD_TODO)
+  const [addTodo, addTodoFunc] = useMutation(ADD_TODO)
   const [deleteItem] = useMutation(DELETE_ITEM)
+  const [updateItem] = useMutation(UPDATE_ITEM)
 
   let input
   const addTask = () => {
@@ -44,6 +53,15 @@ export const TodoItem = () => {
   const deleteTask = id => {
     deleteItem({
       variables: { id },
+      refetchQueries: [{ query: GET_TODOS }],
+    })
+  }
+  const EditTask = (text, id) => {
+    console.log(text, "{{{{{{")
+    //  input.value = text
+    console.log(text, "TEXT", id, "IDENT")
+    updateItem({
+      variables: { id: id, text: input.value },
       refetchQueries: [{ query: GET_TODOS }],
     })
   }
@@ -130,15 +148,9 @@ export const TodoItem = () => {
               return (
                 <li key={crud.id}>
                   {crud.text}
-
-                  <button
-                    onClick={() => deleteTask(crud.id)}
-                    // onClick={e => {
-                    //   e.preventDefault()
-                    //   deleteItem({ variables: { id: crud.id } })
-                    // }}
-                  >
-                    Remove
+                  <button onClick={() => deleteTask(crud.id)}>Remove</button>
+                  <button onClick={() => EditTask(crud.text, crud.id)}>
+                    Edit
                   </button>
                 </li>
               )

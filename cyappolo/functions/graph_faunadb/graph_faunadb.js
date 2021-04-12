@@ -15,6 +15,7 @@ const typeDefs = gql`
   type Mutation {
     addTodo(text: String!): Crud
     deleteItem(id: ID!): Crud
+    updateItem(id: ID!, text: String!): Crud
   }
 
   type Crud {
@@ -29,13 +30,13 @@ const resolvers = {
       try {
         const result = await client.query(
           q.Map(
-            q.Paginate(q.Documents(q.Collection("my_crud"))),
-            q.Lambda(x => q.Get(x))
+            q.Paginate(q.Match(q.Index("cruding"))),
+            q.Lambda("x", q.Get(q.Var("x")))
           )
         )
 
         return result.data.map(item => {
-          return { text: item.data.text, id: item.ts }
+          return { text: item.data.text, id: item.ref.id }
         })
       } catch (err) {
         console.log(err)
@@ -44,6 +45,19 @@ const resolvers = {
   },
 
   Mutation: {
+    updateItem: async (_, { id, text }) => {
+      console.log(id, "ID", text, "TEXT")
+      try {
+        const result = await client.query(
+          q.Update(q.Ref(q.Collection("my_crud"), id), {
+            data: { text: text },
+          })
+        )
+        console.log(result, "OPOP")
+      } catch (error) {
+        console.log(error)
+      }
+    },
     addTodo: async (_, { text }) => {
       try {
         const result = await client.query(
@@ -57,22 +71,10 @@ const resolvers = {
     },
 
     deleteItem: async (_, { id }) => {
-      console.log(id, "IDENRasaR")
       try {
         const result = await client.query(
-          q.Delete(q.Ref(q.Collection("my_crud"), "1617998989665000"))
+          q.Delete(q.Ref(q.Collection("my_crud"), id))
         )
-
-        // const result = await adminClient.query(
-        //   q.Delete(q.Ref(q.Collection("Crud"), id))
-        // )
-        console.log(result, "LPLPLPLPLPLPLPl")
-        // return {
-        //   task: result.data.task,
-        //   id: result.data.id,
-        // }
-
-        // console.log(result, "RESULTTTTLT")
       } catch (error) {
         console.log(error)
       }
