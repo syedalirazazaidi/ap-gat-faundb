@@ -15,12 +15,13 @@ const typeDefs = gql`
   type Mutation {
     addTodo(text: String!): Crud
     deleteItem(id: ID!): Crud
-    updateItem(id: ID!, text: String!): Crud
+    ToggleTodo(id: ID!): Crud
   }
 
   type Crud {
     text: String!
     id: ID!
+    isCompleted: Boolean
   }
 `
 
@@ -36,7 +37,12 @@ const resolvers = {
         )
 
         return result.data.map(item => {
-          return { text: item.data.text, id: item.ref.id }
+          console.log(item, "pppppppppp")
+          return {
+            isCompleted: item.data.isCompleted,
+            text: item.data.text,
+            id: item.ref.id,
+          }
         })
       } catch (err) {
         console.log(err)
@@ -45,23 +51,27 @@ const resolvers = {
   },
 
   Mutation: {
-    updateItem: async (_, { id, text }) => {
-      console.log(id, "ID", text, "TEXT")
-      try {
-        const result = await client.query(
-          q.Update(q.Ref(q.Collection("my_crud"), id), {
-            data: { text: text },
-          })
-        )
-        console.log(result, "OPOP")
-      } catch (error) {
-        console.log(error)
+    ToggleTodo: async (_, { id }) => {
+      const results = await client.query(
+        q.Update(q.Ref(q.Collection("my_crud"), id), {
+          data: {
+            isCompleted: !true,
+          },
+        })
+      )
+      console.log(results, "RESULTE")
+      // return results.data
+      return {
+        ...results.data,
+        id: results.ref.id,
       }
     },
     addTodo: async (_, { text }) => {
       try {
         const result = await client.query(
-          q.Create(q.Collection("my_crud"), { data: { text } })
+          q.Create(q.Collection("my_crud"), {
+            data: { text, isCompleted: false },
+          })
         )
 
         return result.ref.data

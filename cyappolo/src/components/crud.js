@@ -8,6 +8,7 @@ const GET_TODOS = gql`
     allCrud {
       text
       id
+      isCompleted
     }
   }
 `
@@ -19,11 +20,19 @@ const ADD_TODO = gql`
     }
   }
 `
-const UPDATE_ITEM = gql`
-  mutation updateItem($id: ID!, $text: String!) {
-    updateItem(id: $id, text: $text) {
+// const UPDATE_ITEM = gql`
+//   mutation updateItem($id: ID!, $text: String!) {
+//     updateItem(id: $id, text: $text) {
+//       text
+//       id
+//     }
+//   }
+// `
+const TOGGLE_TODO = gql`
+  mutation ToggleTodo($id: ID!) {
+    ToggleTodo(id: $id) {
       text
-      id
+      isCompleted
     }
   }
 `
@@ -35,19 +44,24 @@ const DELETE_ITEM = gql`
   }
 `
 export const TodoItem = () => {
-  const [text, setText] = React.useState("")
   const [addTodo, addTodoFunc] = useMutation(ADD_TODO)
   const [deleteItem] = useMutation(DELETE_ITEM)
-  const [updateItem] = useMutation(UPDATE_ITEM)
+  // const [updateItem] = useMutation(UPDATE_ITEM)
 
+  const [ToggleTodo] = useMutation(TOGGLE_TODO)
   let input
   const addTask = () => {
-    addTodo({
-      variables: {
-        text: input.value,
-      },
-      refetchQueries: [{ query: GET_TODOS }],
-    })
+    if (input.value === "") {
+      alert("PLZ  Fill The field")
+    } else {
+      addTodo({
+        variables: {
+          text: input.value,
+        },
+        refetchQueries: [{ query: GET_TODOS }],
+      })
+    }
+
     input.value = ""
   }
   const deleteTask = id => {
@@ -56,12 +70,11 @@ export const TodoItem = () => {
       refetchQueries: [{ query: GET_TODOS }],
     })
   }
-  const EditTask = (text, id) => {
-    console.log(text, "{{{{{{")
-    //  input.value = text
-    console.log(text, "TEXT", id, "IDENT")
-    updateItem({
-      variables: { id: id, text: input.value },
+  const toggleTodo = id => {
+    ToggleTodo({
+      variables: {
+        id,
+      },
       refetchQueries: [{ query: GET_TODOS }],
     })
   }
@@ -87,7 +100,7 @@ export const TodoItem = () => {
     return <h2>Error</h2>
   }
   if (data) {
-    console.log(data, "all-0--0-")
+    console.log(data, "alllpp-0--0-")
   }
   const Container = styled.div`
     width: 250px;
@@ -98,7 +111,6 @@ export const TodoItem = () => {
     padding: 30px 20px;
     display: flex;
   `
-
   return (
     <>
       <Container>
@@ -112,6 +124,9 @@ export const TodoItem = () => {
             ref={node => {
               input = node
             }}
+            placeholder="What needs to be done?"
+            // value={newTodo}
+            // onChange={event => setNewTodo(event.target.value)}
           />
           <button
             type="submit"
@@ -147,11 +162,17 @@ export const TodoItem = () => {
             {data.allCrud.map(crud => {
               return (
                 <li key={crud.id}>
-                  {crud.text}
+                  <p
+                    style={{
+                      textDecoration: crud.isCompleted
+                        ? "line-through"
+                        : "none",
+                    }}
+                  >
+                    {crud.text}
+                  </p>
+                  <button onClick={() => toggleTodo(crud.id)}>Complete</button>
                   <button onClick={() => deleteTask(crud.id)}>Remove</button>
-                  <button onClick={() => EditTask(crud.text, crud.id)}>
-                    Edit
-                  </button>
                 </li>
               )
             })}
