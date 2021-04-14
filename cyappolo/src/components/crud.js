@@ -20,14 +20,7 @@ const ADD_TODO = gql`
     }
   }
 `
-// const UPDATE_ITEM = gql`
-//   mutation updateItem($id: ID!, $text: String!) {
-//     updateItem(id: $id, text: $text) {
-//       text
-//       id
-//     }
-//   }
-// `
+
 const TOGGLE_TODO = gql`
   mutation ToggleTodo($id: ID!) {
     ToggleTodo(id: $id) {
@@ -44,10 +37,8 @@ const DELETE_ITEM = gql`
   }
 `
 export const TodoItem = () => {
-  const [addTodo, addTodoFunc] = useMutation(ADD_TODO)
+  const [addTodo] = useMutation(ADD_TODO)
   const [deleteItem] = useMutation(DELETE_ITEM)
-  // const [updateItem] = useMutation(UPDATE_ITEM)
-
   const [ToggleTodo] = useMutation(TOGGLE_TODO)
   let input
   const addTask = () => {
@@ -125,8 +116,6 @@ export const TodoItem = () => {
               input = node
             }}
             placeholder="What needs to be done?"
-            // value={newTodo}
-            // onChange={event => setNewTodo(event.target.value)}
           />
           <button
             type="submit"

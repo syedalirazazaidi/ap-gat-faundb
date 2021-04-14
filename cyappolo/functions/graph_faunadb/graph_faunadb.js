@@ -37,7 +37,6 @@ const resolvers = {
         )
 
         return result.data.map(item => {
-          console.log(item, "pppppppppp")
           return {
             isCompleted: item.data.isCompleted,
             text: item.data.text,
@@ -59,8 +58,6 @@ const resolvers = {
           },
         })
       )
-      console.log(results, "RESULTE")
-      // return results.data
       return {
         ...results.data,
         id: results.ref.id,
