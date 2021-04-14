@@ -190,3 +190,5 @@ export const TodoItem = () => {
     </>
   )
 }
+
+// command = "yarn build"
