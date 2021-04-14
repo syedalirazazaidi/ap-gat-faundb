@@ -160,8 +160,27 @@ export const TodoItem = () => {
                   >
                     {crud.text}
                   </p>
-                  <button onClick={() => toggleTodo(crud.id)}>Complete</button>
-                  <button onClick={() => deleteTask(crud.id)}>Remove</button>
+                  <div>
+                    <button
+                      style={{
+                        backgroundColor: "green",
+                        color: "white",
+                        margin: "0.6rem",
+                      }}
+                      onClick={() => toggleTodo(crud.id)}
+                    >
+                      Complete
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "red",
+                        color: "white",
+                      }}
+                      onClick={() => deleteTask(crud.id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </li>
               )
             })}

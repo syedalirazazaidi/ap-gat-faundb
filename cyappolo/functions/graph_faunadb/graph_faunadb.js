@@ -54,7 +54,7 @@ const resolvers = {
       const results = await client.query(
         q.Update(q.Ref(q.Collection("my_crud"), id), {
           data: {
-            isCompleted: !true,
+            isCompleted: true,
           },
         })
       )
